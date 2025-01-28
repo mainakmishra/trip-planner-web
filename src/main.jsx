@@ -6,7 +6,7 @@ import App from './App.jsx';
 import { RouterProvider, createBrowserRouter, useNavigate } from 'react-router-dom'; // Correct import
 import CreateTrip from './create-trip/index.jsx';
 import ViewTrip from './view-trip/[tripId]';
-import Header from './components/ui/custom/header';
+import Header from './components/ui/custom/Header';
 import Hero from './components/ui/custom/Hero';
 import { Toaster } from './components/ui/sonner';
 import { GoogleOAuthProvider } from '@react-oauth/google';
