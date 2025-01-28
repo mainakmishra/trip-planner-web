@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { AiOutlineDollar, AiFillStar } from 'react-icons/ai';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
-import GlobalAPI from '@/services/globalapi';
+import GlobalAPI from '@/services/GlobalAPI';
 
 function HotelCard({ hotelInfo }) {
   const [photoUrl, setPhotoUrl] = useState(null);  // Initially set photoUrl to null (not placeholder)

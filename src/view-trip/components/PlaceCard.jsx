@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { FaMapLocationDot } from "react-icons/fa6";
 import { Link } from 'react-router-dom';
-import GlobalAPI from '@/services/globalapi';
+import GlobalAPI from '@/services/GlobalAPI';
 
 function PlaceCard({ placeInfo }) {
   const [photoUrl, setPhotoUrl] = useState('/placeholder.jpg');
