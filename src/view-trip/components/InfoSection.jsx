@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { IoIosSend } from "react-icons/io";
-import GlobalAPI from '@/services/globalapi';
+import GlobalAPI from '@/services/GlobalAPI';
 
 function InfoSection({ tripInfo }) {
   const [photoUrl, setPhotoUrl] = useState('/placeholder.jpg');
