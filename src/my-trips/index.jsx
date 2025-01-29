@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigation } from 'react-router';
 import { db } from '@/services/firebaseconfig';
 import { getDocs } from 'firebase/firestore';
-import UserTripCard from './components/userTripCard';
+import UserTripCard from './components/UserTripCard';
 
 function MyTrips() {
     
