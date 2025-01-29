@@ -17,12 +17,12 @@ function InfoSection({ tripInfo }) {
         address={tripInfo?.tripData?.destination}
         onPhotoFetched={handlePhotoFetched}
       />
-
       <img src={photoUrl} alt="Destination" className='h-[340px] w-full object-cover rounded' />
-
       <div className='flex justify-between items-baseline'>
         <div className='my-5 flex flex-col gap-2'>
-          <h2 className='font-bold text-3xl mt-2'>{tripInfo?.userName}'s Trip :</h2>
+          <h2 className='font-bold text-3xl mt-2'>
+            {JSON.parse(localStorage.getItem('user'))?.name.split(' ')[0]}'s Trip :
+          </h2>
           <h2 className='font-semibold text-xl'>Starting from : {tripInfo?.tripData?.source}</h2>
           <h2 className='font-semibold text-xl'>Travelling to : {tripInfo?.tripData?.destination}</h2>
           <div className='flex gap-5'>

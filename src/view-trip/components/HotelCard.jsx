@@ -6,12 +6,12 @@ import { Button } from '@/components/ui/button';
 import GlobalAPI from '@/services/GlobalAPI';
 
 function HotelCard({ hotelInfo }) {
-  const [photoUrl, setPhotoUrl] = useState(null);  // Initially set photoUrl to null (not placeholder)
-  const [loading, setLoading] = useState(true); // State to manage the loading of the image
+  const [photoUrl, setPhotoUrl] = useState(null);  
+  const [loading, setLoading] = useState(true); 
 
   const handlePhotoFetched = (url) => {
     setPhotoUrl(url);
-    setLoading(false); // Once the photo is fetched, set loading to false
+    setLoading(false); 
   };
 
   return (
