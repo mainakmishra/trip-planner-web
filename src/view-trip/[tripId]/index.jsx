@@ -9,6 +9,7 @@ import { Hotel } from 'lucide-react';
 import Hotels from '../components/Hotels';
 import Places from '../components/Places';
 import Footer from '../components/Footer';
+import Transport from '../components/Transport';
 
 function ViewTrip() {
 
@@ -18,10 +19,7 @@ function ViewTrip() {
     useEffect(()=>{
         tripId && GetTripData();
     },[tripId])
-
-    /**
-     * used to get trip information from firebase db
-     */
+    
     const  GetTripData = async()=>{
         const docRef=doc(db, "Trips", tripId);
         const docSnap = await getDoc(docRef);
@@ -39,11 +37,13 @@ function ViewTrip() {
     <div className='p-10 md:px-20 lg:px-44 xl:px-56'>
         {/**information section */}
             <InfoSection tripInfo = {trip}/>
+        {/**Trains info*/}
+            <Transport tripInfo = {trip}/>
         {/**hotel info and recommendations  */}
             <Hotels tripInfo = {trip}/>
-        {/**dialy plan and itinerary info*/}
+        {/**daily plan and itinerary info*/}
             <Places tripInfo = {trip}/>
-
+        
             <Footer/>
 
 

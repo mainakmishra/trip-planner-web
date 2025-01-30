@@ -44,7 +44,7 @@ export const SelectBudgetOptions=[
 ]
 
 export const systemprompt = `
-You are a travel planning assistant. Make sure to give the prices in the currency of the country that the starting point lies in. strictly follow this. Also compulsorily give address for all the hotels and places that you are giving. Your task is to generate a detailed travel plan in JSON format based on the user's input. Also make sure to give as much data as possible including atleast 5 hotels and atleast 3 places per day to visit. The travel plan should include the following details:
+You are a travel planning assistant. Make sure to give the prices in the currency of the country that the starting point lies in. strictly follow this. Also compulsorily give address for all the hotels and places that you are giving. First and foremost give the distance by road between the two places and the time to travel by road. Also give all possible trains and flights for the route along with their numbers and travel times in detail irrespective of the number of days or budget or no. of people chosen by the user. Also make sure to give the prices of the respective trains and flights. Make sure to strictly follow this and give atleas 3 trains and flights and more. Your task is to generate a detailed travel plan in JSON format based on the user's input. Also make sure to give as much data as possible including atleast 5 hotels and atleast 3 places per day to visit. The travel plan should include the following details:
 
 1. **Source and Destination**:
    - Source: {startingPoint}
@@ -109,6 +109,8 @@ You are a travel planning assistant. Make sure to give the prices in the currenc
   "duration": "{days} Days",
   "travelers": "{companions}",
   "budget": "{budget}",
+  "distancebyRoad':"{kms}",
+  "timetotravelbyRoad':"{kms}"
   "travelDetails": {
     "train": {
       "name": "Not applicable (flight recommended)",

@@ -3,7 +3,7 @@ import HotelCard from './HotelCard';
 
 function Hotels({ tripInfo }) {
   return (
-    <div className='container mx-auto px-4 py-8'>
+    <div className='container mx-auto py-8'>
       <h2 className='font-bold text-2xl md:text-3xl text-gray-800 mb-6'>
         Hotel Recommendations
       </h2>

@@ -5,8 +5,7 @@ import { SelectBudgetOptions, SelectTravelList, systemprompt } from '@/constants
 import { Button } from '@/components/ui/button';
 import { toast, Toaster } from 'sonner';
 import { chatSession } from '@/services/aimodel';
-import { useGoogleLogin, GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
-import { useGoogleOAuth } from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import axios from 'axios';
@@ -72,12 +71,60 @@ function CreateTrip() {
       });
     } else {
       setLoading(true);
+
+      toast.info('Getting trip details...', {
+        duration: 5000,
+        style: {
+          fontFamily: 'Inter, sans-serif',
+          backgroundColor: '#dbeafe',
+          color: '#1e40af',
+          border: '1px solid #93c5fd',
+        },
+      });
+
+      setTimeout(() => {
+        toast.info('Getting hotel recommendations...', {
+          duration: 5000,
+          style: {
+            fontFamily: 'Inter, sans-serif',
+            backgroundColor: '#dbeafe',
+            color: '#1e40af',
+            border: '1px solid #93c5fd',
+          },
+        });
+      }, 5000);
+
+      setTimeout(() => {
+        toast.info('Creating trip plan...', {
+          duration: 5000,
+          style: {
+            fontFamily: 'Inter, sans-serif',
+            backgroundColor: '#dbeafe',
+            color: '#1e40af',
+            border: '1px solid #93c5fd',
+          },
+        });
+      }, 10000);
+
+      setTimeout(() => {
+        toast.info('Generating trip details...', {
+          duration: 5000,
+          style: {
+            fontFamily: 'Inter, sans-serif',
+            backgroundColor: '#dbeafe',
+            color: '#1e40af',
+            border: '1px solid #93c5fd',
+          },
+        });
+      }, 15000);
+
       const final_prompt = systemprompt
         .replace('{startingPoint}', formData?.startingPoint)
         .replace('{destination}', formData?.destination)
         .replace('{days}', formData?.days)
         .replace('{budget}', formData?.budget)
         .replace('{companions}', formData?.companions);
+
       const result = await chatSession.sendMessage(final_prompt);
       setLoading(false);
       SaveTrip(result?.response?.text());

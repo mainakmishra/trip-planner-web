@@ -4,9 +4,8 @@ import { LuAlarmClockCheck } from "react-icons/lu";
 
 function Places({ tripInfo }) {
   return (
-    <div>
-      <h2 className='font-bold text-lg my-10'>Places to visit</h2>
-
+    <div className='container mx-auto py-8'>
+      <h2 className='font-bold text-2xl md:text-3xl text-gray-800 mb-6'>Places to visit and plan</h2>
       <div>
         {tripInfo.tripData?.itinerary.map((item, index) => (
           <div key={index}>
