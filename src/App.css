@@ -1,5 +1,8 @@
 #root {
-  max-width: 1280px;
+  width: 100%; /* Ensure it takes up the full width */
+  height: 100%; /* Ensure it takes up the full height */
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
 }
 
 .logo {
