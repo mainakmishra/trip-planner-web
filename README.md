@@ -1,4 +1,17 @@
-# Trip Planner App
+
+# Trip Planner Web
+
+![Vercel](https://img.shields.io/badge/Deployed-Vercel-brightgreen)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+
+
+## Demo
+
+Check out the live app: [trip-planner-web-xi.vercel.app](https://trip-planner-web-xi.vercel.app/)
+
+## Screenshot
+
+![Trip Planner Web Screenshot](public/screenshot.png)
 
 Welcome to the **Trip Planner App**, a modern web application built with **React** and **Vite**. This app is designed to help users plan their trips efficiently by providing an intuitive interface and powerful features.
 
@@ -31,8 +44,8 @@ Before you begin, ensure you have the following installed:
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/your-username/trip-planner-app.git
-   cd trip-planner-app
+   git clone https://github.com/mainakmishra/trip-planner-web.git
+   cd trip-planner-web
    ```
 
 2. **Install dependencies**
@@ -77,11 +90,12 @@ npm run lint
 ## Project Structure
 
 ```
-trip-planner-app/
+trip-planner-web/
 ├── public/              # Static assets
 ├── src/                 # Source files
 │   ├── components/      # React components
 │   ├── pages/           # Application pages
+│   ├── services/        # Service configs (e.g., firebase)
 │   ├── App.jsx          # Main application component
 │   ├── main.jsx         # Entry point
 ├── .eslintrc.js         # ESLint configuration
@@ -108,8 +122,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- **Vite** for the blazing-fast development experience.
-- **React** for the powerful UI library.
-- **Babel** and **SWC** for the JavaScript compilation.
+- [Vite](https://vitejs.dev/) for the blazing-fast development experience.
+- [React](https://react.dev/) for the powerful UI library.
+- [Babel](https://babeljs.io/) and [SWC](https://swc.rs/) for JavaScript compilation.
 
 ---
+
+## Contact
+
+For questions or support, open an issue or contact [mainakmishra](https://github.com/mainakmishra).
