@@ -6,6 +6,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { Dialog, DialogContent, DialogDescription, DialogHeader } from "@/components/ui/dialog";
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 
 function Header() {
   const [openDialog, setOpenDialog] = useState(false);
@@ -39,20 +40,42 @@ function Header() {
   }, []);
 
   return (
-    <div className='p-3 shadow-sm flex justify-between items-center px-6 bg-transparent'>
-      <img src="/logo.svg" alt="Logo" />
+    <motion.div
+      className='p-3 shadow-sm flex justify-between items-center px-6 bg-white/60 backdrop-blur-md border-b border-gray-200 z-20 relative'
+      initial={{ y: -40, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.7, type: 'spring', stiffness: 80 }}
+    >
+      <motion.img
+        src="/logo.svg"
+        alt="Logo"
+        className="h-10 w-auto drop-shadow-md"
+        initial={{ x: -30, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.7, delay: 0.2 }}
+      />
       <div>
-        {user ?
-          <div className='flex items-center gap-3'>
+        {user ? (
+          <motion.div
+            className='flex items-center gap-3'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+          >
             <a href='/create-trip'>
-              <Button variant="outline" className="rounded-full">+ Create trip</Button>
+              <Button variant="outline" className="rounded-full hover:scale-105 transition-transform duration-200">+ Create trip</Button>
             </a>
             <a href='/my-trips'>
-              <Button variant="outline" className="rounded-full">My trips</Button>
+              <Button variant="outline" className="rounded-full hover:scale-105 transition-transform duration-200">My trips</Button>
             </a>
             <Popover>
               <PopoverTrigger>
-                <img src={user?.picture} className='h-[35px] w-[35px] rounded-full' alt="Profile" />
+                <motion.img
+                  src={user?.picture}
+                  className='h-[35px] w-[35px] rounded-full border-2 border-primary shadow-md hover:scale-110 transition-transform duration-200'
+                  alt="Profile"
+                  whileHover={{ scale: 1.12 }}
+                />
               </PopoverTrigger>
               <PopoverContent>
                 <h2 className='cursor-pointer' onClick={() => {
@@ -62,9 +85,10 @@ function Header() {
                 }}>Log out</h2>
               </PopoverContent>
             </Popover>
-          </div> :
-          <Button onClick={() => setOpenDialog(true)}>Sign In</Button>
-        }
+          </motion.div>
+        ) : (
+          <Button onClick={() => setOpenDialog(true)} className="hover:scale-105 transition-transform duration-200">Sign In</Button>
+        )}
       </div>
       <Dialog open={openDialog}>
         <DialogContent>
@@ -80,7 +104,7 @@ function Header() {
           </DialogHeader>
         </DialogContent>
       </Dialog>
-    </div>
+    </motion.div>
   );
 }
 
