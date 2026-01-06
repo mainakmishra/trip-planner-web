@@ -1,60 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { AiOutlineDollar, AiFillStar } from 'react-icons/ai';
-import { FaMapMarkerAlt } from 'react-icons/fa';
-import { Button } from '@/components/ui/button';
+import { IoStarSharp, IoLocationOutline } from 'react-icons/io5';
 import GlobalAPI from '@/services/GlobalAPI';
 
-function HotelCard({ hotelInfo }) {
-  const [photoUrl, setPhotoUrl] = useState(null);  
-  const [loading, setLoading] = useState(true); 
+function HotelCard({ hotelInfo, destination }) {
+  const [photoUrl, setPhotoUrl] = useState('/placeholder.svg');
+  const [loading, setLoading] = useState(true);
 
-  const handlePhotoFetched = (url) => {
-    setPhotoUrl(url);
-    setLoading(false); 
+  const handlePhotoFetched = useCallback((url) => {
+    setPhotoUrl(url || '/placeholder.svg');
+    setLoading(false);
+  }, []);
+
+  const formatPrice = (price) => {
+    if (!price) return 'Check price';
+    if (typeof price === 'string') return price;
+    if (typeof price === 'object') {
+      const firstPrice = Object.values(price)[0];
+      return firstPrice || 'Check price';
+    }
+    return String(price);
   };
 
   return (
-    <div className="h-full">
-      <Link to={'https://www.google.com/maps/search/?api=1&query=' + hotelInfo.name + "," + hotelInfo.address} target="_blank">
-        <div className="hover:scale-105 transition-all cursor-pointer h-full flex flex-col">
-          <GlobalAPI
-            name={hotelInfo.name}
-            address={hotelInfo.address}
-            onPhotoFetched={handlePhotoFetched}
+    <Link 
+      to={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotelInfo?.name + ' ' + hotelInfo?.address)}`}
+      target="_blank"
+      className="group block"
+    >
+      <GlobalAPI
+        name={hotelInfo?.name}
+        address={hotelInfo?.address}
+        onPhotoFetched={handlePhotoFetched}
+        type="hotel"
+        city={destination}
+      />
+
+      <div className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-lg hover:border-gray-200 transition-all duration-300">
+        {loading ? (
+          <div className="h-40 bg-gray-100 animate-pulse" />
+        ) : (
+          <img 
+            src={photoUrl} 
+            alt={hotelInfo?.name}
+            className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
           />
-
-         
-            <div className="relative">
-            {!loading && photoUrl && (
-                <img src={photoUrl} alt={hotelInfo.name} className="rounded-xl w-full h-40 object-cover" />
+        )}
+        
+        <div className="p-4 space-y-2">
+          <div className="flex items-start justify-between">
+            <h3 className="font-medium text-gray-900 line-clamp-1">{hotelInfo?.name}</h3>
+            {hotelInfo?.rating && (
+              <div className="flex items-center gap-1 text-sm text-gray-600 shrink-0">
+                <IoStarSharp className="w-4 h-4 text-amber-400" />
+                {hotelInfo.rating}
+              </div>
             )}
-            </div>
-
-
-
-          <div className="flex flex-col my-2 flex-grow">
-            <div className="flex items-center justify-between">
-              <h2 className="font-medium text-black">{hotelInfo.name}</h2>
-              <h2 className="font-medium flex items-center gap-1 text-gray-600">
-                <AiFillStar className="text-yellow-400 hover:text-yellow-500" />
-                {hotelInfo?.rating}
-              </h2>
-            </div>
-
-            <div className="flex items-center gap-2 text-xs text-gray-500 my-3">
-              <FaMapMarkerAlt className="text-pink-500" />
-              <span>{hotelInfo.address}</span>
-            </div>
-
-            <Button className="flex items-center gap-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 mt-auto">
-              <AiOutlineDollar />
-              <span>{hotelInfo.price}</span>
-            </Button>
           </div>
+          
+          <p className="text-sm text-gray-500 flex items-center gap-1 line-clamp-1">
+            <IoLocationOutline className="w-3 h-3 shrink-0" />
+            {hotelInfo?.address}
+          </p>
+          
+          <p className="text-sm font-medium text-gray-900">
+            {formatPrice(hotelInfo?.price)}
+          </p>
         </div>
-      </Link>
-    </div>
+      </div>
+    </Link>
   );
 }
 

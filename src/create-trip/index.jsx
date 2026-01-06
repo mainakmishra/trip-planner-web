@@ -125,25 +125,75 @@ function CreateTrip() {
         .replace('{budget}', formData?.budget)
         .replace('{companions}', formData?.companions);
 
-      const result = await chatSession.sendMessage(final_prompt);
-      setLoading(false);
-      SaveTrip(result?.response?.text());
+      try {
+        console.log('[CreateTrip] Sending prompt to Gemini...');
+        const result = await chatSession.sendMessage(final_prompt);
+        console.log('[CreateTrip] Got response from Gemini');
+        const responseText = result?.response?.text();
+        console.log('[CreateTrip] Response text:', responseText?.substring(0, 200));
+        setLoading(false);
+        SaveTrip(responseText);
+      } catch (error) {
+        console.error('[CreateTrip] Gemini API error:', error);
+        setLoading(false);
+        toast.error('Failed to generate trip. Please try again.', {
+          style: {
+            fontFamily: 'Inter, sans-serif',
+            backgroundColor: '#fee2e2',
+            color: '#dc2626',
+            border: '1px solid #fca5a5',
+          },
+        });
+      }
     }
   };
 
   const SaveTrip = async (TripData) => {
     setLoading(true);
-    const user = JSON.parse(localStorage.getItem('user'));
-    const docId = Date.now().toString();
-    await setDoc(doc(db, "Trips", docId), {
-      userSelection: formData,
-      tripData: JSON.parse(TripData),
-      userEmail: user?.email,
-      userName: user?.given_name,
-      id: docId
-    });
-    setLoading(false);
-    navigate('/view-trip/' + docId);
+    try {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const docId = Date.now().toString();
+      
+      // Try to parse the JSON, handle truncated responses
+      let parsedTripData;
+      try {
+        parsedTripData = JSON.parse(TripData);
+      } catch (parseError) {
+        console.error('[SaveTrip] JSON parse error:', parseError);
+        console.error('[SaveTrip] Raw response:', TripData);
+        toast.error('Failed to parse trip data. The response may have been truncated. Please try again.', {
+          style: {
+            fontFamily: 'Inter, sans-serif',
+            backgroundColor: '#fee2e2',
+            color: '#dc2626',
+            border: '1px solid #fca5a5',
+          },
+        });
+        setLoading(false);
+        return;
+      }
+      
+      await setDoc(doc(db, "Trips", docId), {
+        userSelection: formData,
+        tripData: parsedTripData,
+        userEmail: user?.email,
+        userName: user?.given_name,
+        id: docId
+      });
+      setLoading(false);
+      navigate('/view-trip/' + docId);
+    } catch (error) {
+      console.error('[SaveTrip] Error saving trip:', error);
+      toast.error('Failed to save trip. Please try again.', {
+        style: {
+          fontFamily: 'Inter, sans-serif',
+          backgroundColor: '#fee2e2',
+          color: '#dc2626',
+          border: '1px solid #fca5a5',
+        },
+      });
+      setLoading(false);
+    }
   };
 
   const getUserProfile = (tokenInfo) => {

@@ -1,24 +1,34 @@
 import React from 'react';
 import PlaceCard from './PlaceCard';
-import { LuAlarmClockCheck } from "react-icons/lu";
 
 function Places({ tripInfo }) {
+  const itinerary = tripInfo?.tripData?.itinerary || [];
+
+  if (!itinerary.length) {
+    return null;
+  }
+
   return (
-    <div className='container mx-auto py-8'>
-      <h2 className='font-bold text-2xl md:text-3xl text-gray-800 mb-6'>Places to visit and plan</h2>
-      <div>
-        {tripInfo.tripData?.itinerary.map((item, index) => (
-          <div key={index}>
-            <h2 className='text-lg font-medium my-5'>Day {item.day}</h2>
-            <div className='grid md:grid-cols-2 gap-5'>
-              {item.places.map((place, index) => (
-                <div className='my-3' key={index}>
-                  <PlaceCard placeInfo={place} />
-                  <div className='flex items-center mt-2'>
-                    <LuAlarmClockCheck className='mx-2 font-medium text-sm text-orange-700' />
-                    <span className='ml-2 text-sm'>{place.bestTimeToVisit}</span>
-                  </div>
-                </div>
+    <div className="mt-12">
+      <h2 className="text-xl font-semibold text-gray-900 mb-6">
+        Daily Itinerary
+      </h2>
+      
+      <div className="space-y-8">
+        {itinerary.map((dayPlan, index) => (
+          <div key={index} className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-sm font-medium">
+                {dayPlan?.day || index + 1}
+              </div>
+              <h3 className="text-lg font-medium text-gray-900">
+                Day {dayPlan?.day || index + 1}
+              </h3>
+            </div>
+            
+            <div className="ml-4 pl-7 border-l-2 border-gray-100 space-y-3">
+              {dayPlan?.places?.map((place, placeIndex) => (
+                <PlaceCard key={placeIndex} placeInfo={place} />
               ))}
             </div>
           </div>

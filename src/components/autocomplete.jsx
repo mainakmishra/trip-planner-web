@@ -1,96 +1,188 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { debounce } from 'lodash';
+import { getPlaceSuggestions } from '../services/geoapify';
 
+/**
+ * Autocomplete component for place search
+ * Uses Geoapify API for suggestions
+ */
 const Autocomplete = ({ onSelect }) => {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [isSuggestionSelected, setIsSuggestionSelected] = useState(false);
-  const [highlightedIndex, setHighlightedIndex] = useState(-1); // Track highlighted suggestion
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
-  const normalizeInput = (input) => {
+  // Fetch suggestions from Geoapify
+  const fetchSuggestions = useCallback(async (input) => {
     const trimmedInput = input.trim();
-    if (trimmedInput.length < 2) return trimmedInput;
-
-    return trimmedInput.endsWith(' ') ? trimmedInput : `${trimmedInput} `;
-  };
-
-  const fetchSuggestions = async (input) => {
-    const normalizedInput = normalizeInput(input);
-    console.log('Normalized input:', normalizedInput); 
-
-    if (normalizedInput.length < 2) {
-      console.log('Input too short, skipping API call'); 
+    
+    if (trimmedInput.length < 2) {
       setSuggestions([]);
       return;
     }
 
-    const apiUrl = `https://maps.gomaps.pro/maps/api/place/queryautocomplete/json?input=${encodeURIComponent(normalizedInput)}&language=en&key=${import.meta.env.VITE_GOMAPS_API_KEY}`;
-
-    console.log('API URL:', apiUrl);
-
+    setIsLoading(true);
+    
     try {
-      const response = await fetch(apiUrl);
-      const data = await response.json();
-      console.log('API Response:', data); 
-
-      if (data.predictions && data.predictions.length > 0) {
-        setSuggestions(data.predictions);
-      } else {
-        setSuggestions([]);
-      }
+      const results = await getPlaceSuggestions(trimmedInput, { limit: 5 });
+      setSuggestions(results);
     } catch (error) {
-      console.error('Error fetching autocomplete suggestions:', error);
+      console.error('Error fetching suggestions:', error);
+      setSuggestions([]);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, []);
 
-  const debouncedFetchSuggestions = debounce(fetchSuggestions, 300); // 300ms delay
+  // Memoized debounced function
+  const debouncedFetchSuggestions = useMemo(
+    () => debounce(fetchSuggestions, 300),
+    [fetchSuggestions]
+  );
 
-  const handleInputChange = (event) => {
+  // Cleanup debounce on unmount
+  useEffect(() => {
+    return () => {
+      debouncedFetchSuggestions.cancel();
+    };
+  }, [debouncedFetchSuggestions]);
+
+  const handleInputChange = useCallback((event) => {
     const value = event.target.value;
     setQuery(value);
-    setIsSuggestionSelected(false); // Reset the selection state when input changes
-    setHighlightedIndex(-1); // Reset highlighted index
+    setIsSuggestionSelected(false);
+    setHighlightedIndex(-1);
     debouncedFetchSuggestions(value);
-  };
+  }, [debouncedFetchSuggestions]);
 
-  const handleSuggestionClick = (suggestion) => {
+  const handleSuggestionClick = useCallback((suggestion) => {
     setQuery(suggestion.description);
     setSuggestions([]);
-    setIsSuggestionSelected(true); // Mark that a suggestion has been selected
+    setIsSuggestionSelected(true);
     onSelect(suggestion);
-  };
+  }, [onSelect]);
 
-  const handleKeyDown = (event) => {
-    if (suggestions.length === 0) return; // No suggestions, do nothing
+  const handleKeyDown = useCallback((event) => {
+    if (suggestions.length === 0) return;
 
     switch (event.key) {
       case 'ArrowDown':
-        event.preventDefault(); // Prevent default scrolling behavior
+        event.preventDefault();
         setHighlightedIndex((prevIndex) =>
           prevIndex < suggestions.length - 1 ? prevIndex + 1 : prevIndex
         );
         break;
       case 'ArrowUp':
-        event.preventDefault(); // Prevent default scrolling behavior
+        event.preventDefault();
         setHighlightedIndex((prevIndex) =>
           prevIndex > 0 ? prevIndex - 1 : 0
         );
         break;
       case 'Enter':
         if (highlightedIndex >= 0 && highlightedIndex < suggestions.length) {
-          const selectedSuggestion = suggestions[highlightedIndex];
-          handleSuggestionClick(selectedSuggestion);
+          handleSuggestionClick(suggestions[highlightedIndex]);
         }
+        break;
+      case 'Escape':
+        setSuggestions([]);
+        setHighlightedIndex(-1);
         break;
       default:
         break;
     }
-  };
+  }, [suggestions, highlightedIndex, handleSuggestionClick]);
 
   // Reset highlighted index when suggestions change
   useEffect(() => {
     setHighlightedIndex(-1);
   }, [suggestions]);
+
+  // Render suggestion item
+  const renderSuggestion = (suggestion, index) => {
+    const isHighlighted = highlightedIndex === index;
+    
+    return (
+      <li
+        key={suggestion.place_id || index}
+        onClick={() => handleSuggestionClick(suggestion)}
+        onMouseEnter={() => setHighlightedIndex(index)}
+        role="option"
+        aria-selected={isHighlighted}
+        className={`p-3 cursor-pointer transition-all ${
+          isHighlighted ? 'bg-pink-100' : 'hover:bg-pink-50'
+        }`}
+      >
+        <div className="flex items-start gap-2">
+          <svg
+            className="w-5 h-5 text-pink-400 mt-0.5 flex-shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+          </svg>
+          <span className="text-gray-700">{suggestion.description}</span>
+        </div>
+      </li>
+    );
+  };
+
+  // Render suggestions list content
+  const renderSuggestionsContent = () => {
+    if (query.length < 2) {
+      return (
+        <li className="p-3 text-gray-500">
+          Type at least 2 characters to see suggestions
+        </li>
+      );
+    }
+
+    if (isLoading) {
+      return (
+        <li className="p-3 text-gray-500 flex items-center gap-2">
+          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+              fill="none"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+            />
+          </svg>
+          Searching...
+        </li>
+      );
+    }
+
+    if (suggestions.length > 0) {
+      return suggestions.map(renderSuggestion);
+    }
+
+    if (!isSuggestionSelected) {
+      return <li className="p-3 text-gray-500">No results found</li>;
+    }
+
+    return null;
+  };
 
   return (
     <div className="relative">
@@ -99,8 +191,12 @@ const Autocomplete = ({ onSelect }) => {
           type="text"
           value={query}
           onChange={handleInputChange}
-          onKeyDown={handleKeyDown} // Handle keyboard events
+          onKeyDown={handleKeyDown}
           placeholder="Enter a location"
+          aria-label="Search for a location"
+          aria-autocomplete="list"
+          aria-controls="suggestions-list"
+          aria-expanded={suggestions.length > 0}
           className="w-full p-3 pl-12 text-lg bg-pink-50 border-2 border-pink-200 rounded-lg focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-300 placeholder-pink-400 transition-all shadow-md"
         />
         <svg
@@ -118,24 +214,12 @@ const Autocomplete = ({ onSelect }) => {
           />
         </svg>
       </div>
-      <ul className="mt-2 bg-white border border-pink-100 rounded-lg shadow-lg">
-        {query.length < 2 ? (
-          <li className="p-3 text-gray-500">Type at least 2 characters to see suggestions</li>
-        ) : suggestions.length > 0 ? (
-          suggestions.map((suggestion, index) => (
-            <li
-              key={suggestion.place_id}
-              onClick={() => handleSuggestionClick(suggestion)}
-              className={`p-3 cursor-pointer hover:bg-pink-50 transition-all ${
-                highlightedIndex === index ? 'bg-pink-100' : ''
-              }`}
-            >
-              {suggestion.description}
-            </li>
-          ))
-        ) : !isSuggestionSelected ? ( // Only show "No results found" if no suggestion has been selected
-          <li className="p-3 text-gray-500">No results found</li>
-        ) : null}
+      <ul
+        id="suggestions-list"
+        role="listbox"
+        className="mt-2 bg-white border border-pink-100 rounded-lg shadow-lg"
+      >
+        {renderSuggestionsContent()}
       </ul>
     </div>
   );
